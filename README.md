@@ -1,5 +1,26 @@
 # API Test Suite Documentation
 
+## Setup
+
+### Prerequisites
+
+- Python 3.12.5+
+
+### Installation
+
+1. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Running Tests
+
+To run the tests, use the following command:
+
+```bash
+pytest
+```
+
 This document explains the test functions and cases implemented in `test_api.py`.
 
 ## Helper Functions

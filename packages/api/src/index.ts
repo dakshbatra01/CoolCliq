@@ -32,15 +32,20 @@ const io = new SocketServer(httpServer, {
   },
 });
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(helmet());
+const allowedOrigins = [
+  process.env.WEB_URL || 'http://localhost:3000',
+  process.env.ADMIN_URL || 'http://localhost:3001',
+];
+
 app.use(cors({
-  origin: [
-    process.env.WEB_URL || 'http://localhost:3000',
-    process.env.ADMIN_URL || 'http://localhost:3001',
-  ],
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
+  optionsSuccessStatus: 200
 }));
+
+app.use(helmet());
 app.use(express.json());
 app.use(rateLimiter);
 
@@ -68,6 +73,7 @@ const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
   console.log(`🚀 CoolCliq API running on port ${PORT}`);
   console.log(`📡 Socket.IO ready`);
+  console.log(`🔒 CORS allowed for: ${allowedOrigins.join(', ')}`);
 });
 
 export { io };

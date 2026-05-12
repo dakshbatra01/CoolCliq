@@ -26,8 +26,9 @@ router.post('/send-otp', otpRateLimiter, async (req, res) => {
     // Delete old tokens for this phone
     await prisma.otpToken.deleteMany({ where: { phone } });
 
-    // In production: send via Twilio. For MVP, use mock code.
-    const code = process.env.NODE_ENV === 'production'
+    // In production: send via Twilio. 
+    // For MVP/Testing: we use the mock code unless a ENABLE_REAL_OTP flag is set.
+    const code = process.env.ENABLE_REAL_OTP === 'true'
       ? Math.floor(100000 + Math.random() * 900000).toString()
       : OTP_MOCK_CODE;
 

@@ -7,8 +7,9 @@ export default function SplashScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem('cc_token');
+    // We only run this on the client to avoid hydration mismatch
+    const token = typeof window !== 'undefined' ? localStorage.getItem('cc_token') : null;
+    
     const timer = setTimeout(() => {
       if (token) {
         router.replace('/map');

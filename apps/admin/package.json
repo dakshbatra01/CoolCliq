@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@coolcliq/shared": "workspace:*",
-    "next": "15.3.2",
+    "next": "15.5.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.13.0",

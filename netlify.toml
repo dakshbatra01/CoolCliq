@@ -1,0 +1,17 @@
+[build]
+  command = "pnpm build --filter @coolcliq/web"
+  publish = "apps/web/.next"
+  base = "/"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_FLAGS = "--shamefully-hoist"
+
+[[redirects]]
+  from = "/*"
+  to = "/.next/server/pages/:splat"
+  status = 200
+  condition = { "status" = 404 }

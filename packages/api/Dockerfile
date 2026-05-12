@@ -5,8 +5,8 @@ RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 WORKDIR /app
 
-# Copy all workspace manifests first (maximises layer cache)
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
+# Copy all workspace manifests and configs first (maximises layer cache)
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc turbo.json ./
 COPY apps/admin/package.json        ./apps/admin/package.json
 COPY apps/web/package.json          ./apps/web/package.json
 COPY packages/api/package.json      ./packages/api/package.json

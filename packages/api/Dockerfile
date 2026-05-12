@@ -28,8 +28,8 @@ COPY packages/api           ./packages/api
 # Generate Prisma client
 RUN pnpm --filter @coolcliq/prisma db:generate
 
-# Compile API TypeScript → dist/
-RUN pnpm --filter @coolcliq/api build
+# Compile API and its dependencies (shared package, etc.)
+RUN pnpm build --filter @coolcliq/api...
 
 # Use pnpm deploy to create a clean, standalone production bundle
 # This resolves all workspace:* links into real files — no more symlinks

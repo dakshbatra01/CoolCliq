@@ -241,7 +241,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/shouryabafna/Desktop/Submission/packages/prisma/generated/client",
+      "value": "C:\\Users\\DELL\\Downloads\\Submission\\packages\\prisma\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -250,12 +250,24 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/shouryabafna/Desktop/Submission/packages/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\DELL\\Downloads\\Submission\\packages\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -269,6 +281,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -277,8 +290,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// ─── Enums ────────────────────────────────────────────────────────────────────\n\nenum Gender {\n  MALE\n  FEMALE\n  OTHER\n  PREFER_NOT_TO_SAY\n}\n\nenum VenueCategory {\n  CAFE\n  BAR\n  RESTAURANT\n  LOUNGE\n  OTHER\n}\n\n// ─── Models ───────────────────────────────────────────────────────────────────\n\nmodel User {\n  id         String   @id @default(cuid())\n  phone      String   @unique\n  alias      String   @unique\n  avatarSeed String\n  gender     Gender\n  isActive   Boolean  @default(true)\n  isAdmin    Boolean  @default(false)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  sessions         Session[]\n  sentMessages     Message[]      @relation(\"SentMessages\")\n  receivedMessages Message[]      @relation(\"ReceivedMessages\")\n  blockedUsers     Block[]        @relation(\"BlockedBy\")\n  blockedByUsers   Block[]        @relation(\"Blocking\")\n  reports          Report[]       @relation(\"Reporter\")\n  reportedIn       Report[]       @relation(\"Reported\")\n  conversationsAs1 Conversation[] @relation(\"ConvUser1\")\n  conversationsAs2 Conversation[] @relation(\"ConvUser2\")\n\n  @@map(\"users\")\n}\n\nmodel Venue {\n  id        String        @id @default(cuid())\n  name      String\n  address   String\n  lat       Float\n  lng       Float\n  category  VenueCategory @default(OTHER)\n  isActive  Boolean       @default(true)\n  qrCode    String?\n  createdAt DateTime      @default(now())\n  updatedAt DateTime      @updatedAt\n\n  sessions      Session[]\n  tables        Table[]\n  conversations Conversation[]\n\n  @@map(\"venues\")\n}\n\nmodel Table {\n  id      String  @id @default(cuid())\n  venueId String\n  venue   Venue   @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  label   String\n  qrCode  String?\n\n  sessions Session[]\n\n  @@map(\"tables\")\n}\n\nmodel Session {\n  id          String    @id @default(cuid())\n  userId      String\n  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  venueId     String\n  venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  tableId     String?\n  table       Table?    @relation(fields: [tableId], references: [id])\n  checkedInAt DateTime  @default(now())\n  exitedAt    DateTime?\n  isActive    Boolean   @default(true)\n  lat         Float\n  lng         Float\n\n  @@map(\"sessions\")\n}\n\nmodel Conversation {\n  id        String   @id @default(cuid())\n  user1Id   String\n  user1     User     @relation(\"ConvUser1\", fields: [user1Id], references: [id], onDelete: Cascade)\n  user2Id   String\n  user2     User     @relation(\"ConvUser2\", fields: [user2Id], references: [id], onDelete: Cascade)\n  venueId   String\n  venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now())\n\n  messages    Message[]\n  tableReveal TableReveal?\n\n  @@unique([user1Id, user2Id, venueId])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id             String       @id @default(cuid())\n  conversationId String\n  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  senderId       String\n  sender         User         @relation(\"SentMessages\", fields: [senderId], references: [id], onDelete: Cascade)\n  receiverId     String\n  receiver       User         @relation(\"ReceivedMessages\", fields: [receiverId], references: [id], onDelete: Cascade)\n  content        String       @db.VarChar(500)\n  sentAt         DateTime     @default(now())\n  isRead         Boolean      @default(false)\n\n  @@map(\"messages\")\n}\n\nmodel TableReveal {\n  id             String       @id @default(cuid())\n  conversationId String       @unique\n  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  user1Consented Boolean      @default(false)\n  user2Consented Boolean      @default(false)\n  tableLabel     String?\n  revealedAt     DateTime?\n  createdAt      DateTime     @default(now())\n\n  @@map(\"table_reveals\")\n}\n\nmodel Block {\n  id        String   @id @default(cuid())\n  blockerId String\n  blocker   User     @relation(\"BlockedBy\", fields: [blockerId], references: [id], onDelete: Cascade)\n  blockedId String\n  blocked   User     @relation(\"Blocking\", fields: [blockedId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now())\n\n  @@unique([blockerId, blockedId])\n  @@map(\"blocks\")\n}\n\nmodel Report {\n  id         String   @id @default(cuid())\n  reporterId String\n  reporter   User     @relation(\"Reporter\", fields: [reporterId], references: [id], onDelete: Cascade)\n  reportedId String\n  reported   User     @relation(\"Reported\", fields: [reportedId], references: [id], onDelete: Cascade)\n  reason     String\n  resolved   Boolean  @default(false)\n  createdAt  DateTime @default(now())\n\n  @@map(\"reports\")\n}\n\nmodel OtpToken {\n  id        String   @id @default(cuid())\n  phone     String\n  code      String\n  attempts  Int      @default(0)\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  @@map(\"otp_tokens\")\n}\n",
-  "inlineSchemaHash": "3c9018561da128854034933acb25d892b83439d15446e966d665736bbda9767a",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"./generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-1.1.x\", \"debian-openssl-3.0.x\", \"linux-musl-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// ─── Enums ────────────────────────────────────────────────────────────────────\n\nenum Gender {\n  MALE\n  FEMALE\n  OTHER\n  PREFER_NOT_TO_SAY\n}\n\nenum VenueCategory {\n  CAFE\n  BAR\n  RESTAURANT\n  LOUNGE\n  OTHER\n}\n\n// ─── Models ───────────────────────────────────────────────────────────────────\n\nmodel User {\n  id         String   @id @default(cuid())\n  phone      String   @unique\n  alias      String   @unique\n  avatarSeed String\n  gender     Gender\n  isActive   Boolean  @default(true)\n  isAdmin    Boolean  @default(false)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  sessions         Session[]\n  sentMessages     Message[]      @relation(\"SentMessages\")\n  receivedMessages Message[]      @relation(\"ReceivedMessages\")\n  blockedUsers     Block[]        @relation(\"BlockedBy\")\n  blockedByUsers   Block[]        @relation(\"Blocking\")\n  reports          Report[]       @relation(\"Reporter\")\n  reportedIn       Report[]       @relation(\"Reported\")\n  conversationsAs1 Conversation[] @relation(\"ConvUser1\")\n  conversationsAs2 Conversation[] @relation(\"ConvUser2\")\n\n  @@map(\"users\")\n}\n\nmodel Venue {\n  id        String        @id @default(cuid())\n  name      String\n  address   String\n  lat       Float\n  lng       Float\n  category  VenueCategory @default(OTHER)\n  isActive  Boolean       @default(true)\n  qrCode    String?\n  createdAt DateTime      @default(now())\n  updatedAt DateTime      @updatedAt\n\n  sessions      Session[]\n  tables        Table[]\n  conversations Conversation[]\n\n  @@map(\"venues\")\n}\n\nmodel Table {\n  id      String  @id @default(cuid())\n  venueId String\n  venue   Venue   @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  label   String\n  qrCode  String?\n\n  sessions Session[]\n\n  @@map(\"tables\")\n}\n\nmodel Session {\n  id          String    @id @default(cuid())\n  userId      String\n  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  venueId     String\n  venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  tableId     String?\n  table       Table?    @relation(fields: [tableId], references: [id])\n  checkedInAt DateTime  @default(now())\n  exitedAt    DateTime?\n  isActive    Boolean   @default(true)\n  lat         Float\n  lng         Float\n\n  @@map(\"sessions\")\n}\n\nmodel Conversation {\n  id        String   @id @default(cuid())\n  user1Id   String\n  user1     User     @relation(\"ConvUser1\", fields: [user1Id], references: [id], onDelete: Cascade)\n  user2Id   String\n  user2     User     @relation(\"ConvUser2\", fields: [user2Id], references: [id], onDelete: Cascade)\n  venueId   String\n  venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now())\n\n  messages    Message[]\n  tableReveal TableReveal?\n\n  @@unique([user1Id, user2Id, venueId])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id             String       @id @default(cuid())\n  conversationId String\n  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  senderId       String\n  sender         User         @relation(\"SentMessages\", fields: [senderId], references: [id], onDelete: Cascade)\n  receiverId     String\n  receiver       User         @relation(\"ReceivedMessages\", fields: [receiverId], references: [id], onDelete: Cascade)\n  content        String       @db.VarChar(500)\n  sentAt         DateTime     @default(now())\n  isRead         Boolean      @default(false)\n\n  @@map(\"messages\")\n}\n\nmodel TableReveal {\n  id             String       @id @default(cuid())\n  conversationId String       @unique\n  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  user1Consented Boolean      @default(false)\n  user2Consented Boolean      @default(false)\n  tableLabel     String?\n  revealedAt     DateTime?\n  createdAt      DateTime     @default(now())\n\n  @@map(\"table_reveals\")\n}\n\nmodel Block {\n  id        String   @id @default(cuid())\n  blockerId String\n  blocker   User     @relation(\"BlockedBy\", fields: [blockerId], references: [id], onDelete: Cascade)\n  blockedId String\n  blocked   User     @relation(\"Blocking\", fields: [blockedId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now())\n\n  @@unique([blockerId, blockedId])\n  @@map(\"blocks\")\n}\n\nmodel Report {\n  id         String   @id @default(cuid())\n  reporterId String\n  reporter   User     @relation(\"Reporter\", fields: [reporterId], references: [id], onDelete: Cascade)\n  reportedId String\n  reported   User     @relation(\"Reported\", fields: [reportedId], references: [id], onDelete: Cascade)\n  reason     String\n  resolved   Boolean  @default(false)\n  createdAt  DateTime @default(now())\n\n  @@map(\"reports\")\n}\n\nmodel OtpToken {\n  id        String   @id @default(cuid())\n  phone     String\n  code      String\n  attempts  Int      @default(0)\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  @@map(\"otp_tokens\")\n}\n",
+  "inlineSchemaHash": "8ca8fd19307c1e5a80e39352d976adc102c2990e1141ad6c6d75bd7b4b9ddeea",
   "copyEngine": true
 }
 
@@ -316,8 +329,20 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "generated/client/libquery_engine-darwin-arm64.dylib.node")
+path.join(__dirname, "query_engine-windows.dll.node");
+path.join(process.cwd(), "generated/client/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-1.1.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-3.0.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-musl-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-linux-musl-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/client/schema.prisma")

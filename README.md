@@ -2,6 +2,13 @@
 
 **Connect instantly, right where you are.**
 
+### 🌐 Live Production Links
+*   **User Web App**: [https://cool-cliq-1.netlify.app](https://cool-cliq-1.netlify.app)
+*   **Admin Dashboard**: [https://coolcliq-admin.netlify.app](https://coolcliq-admin.netlify.app)
+*   **API Backend**: [https://coolcliq-api.onrender.com](https://coolcliq-api.onrender.com)
+
+---
+
 CoolCliq is a mobile-first anonymous social discovery platform for real-world venues (cafés, bars, lounges). Users scan a venue QR code, get GPS-verified, discover anonymously-present others, and can chat 1-to-1 — with a mutual consent table-reveal to meet in person.
 
 ---
@@ -213,29 +220,21 @@ NEXT_PUBLIC_GOOGLE_MAPS_KEY=  # (optional) Google Maps API key
 
 ---
 
-### 2. Deploy the Web App → Vercel
+### 2. Deploy the Frontends → Netlify
 
-1. Go to [vercel.com](https://vercel.com) → **New Project** → import your GitHub repo.
-2. Set **Root Directory** → `apps/web`.
-3. Vercel auto-detects Next.js. Override the commands:
-   - **Install**: `cd ../.. && pnpm install --frozen-lockfile`
-   - **Build**: `cd ../.. && pnpm --filter @coolcliq/web build`
+1. Go to [netlify.com](https://netlify.com) → **Add new site** → **Import an existing project**.
+2. Select your GitHub repo.
+3. For each app (Web and Admin), create a separate site:
+   - **Base Directory**: `apps/web` (for web) or `apps/admin` (for admin)
+   - **Build Command**: `pnpm build`
+   - **Publish Directory**: `.next`
 4. Add **Environment Variables**:
    ```
    NEXT_PUBLIC_API_URL=https://coolcliq-api.onrender.com/api
    NEXT_PUBLIC_WS_URL=https://coolcliq-api.onrender.com
-   NEXT_PUBLIC_GOOGLE_MAPS_KEY=<optional>
+   PNPM_FLAGS=--shamefully-hoist --no-frozen-lockfile
    ```
 5. Deploy.
-
----
-
-### 3. Deploy the Admin App → Vercel
-
-Same steps as the web app, but:
-- **Root Directory** → `apps/admin`
-- **Build**: `cd ../.. && pnpm --filter @coolcliq/admin build`
-- Same `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` env vars.
 
 ---
 

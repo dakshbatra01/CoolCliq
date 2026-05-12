@@ -1,5 +1,5 @@
 [build]
-  command = "pnpm build --filter @coolcliq/web"
+  command = "pnpm build"
   publish = ".next"
 
 [[plugins]]

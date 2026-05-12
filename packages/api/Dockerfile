@@ -17,7 +17,7 @@ COPY packages/eslint-config/package.json     ./packages/eslint-config/package.js
 COPY packages/ui/package.json                ./packages/ui/package.json
 
 # Install all deps (needed for type compilation)
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Copy full source
 COPY packages/shared        ./packages/shared

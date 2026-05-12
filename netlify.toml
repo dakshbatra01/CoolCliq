@@ -8,7 +8,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  PNPM_FLAGS = "--shamefully-hoist"
+  PNPM_FLAGS = "--shamefully-hoist --no-frozen-lockfile"
 
 [[redirects]]
   from = "/*"

@@ -9,9 +9,3 @@
 [build.environment]
   NODE_VERSION = "20"
   PNPM_FLAGS = "--shamefully-hoist --no-frozen-lockfile"
-
-[[redirects]]
-  from = "/*"
-  to = "/.next/server/pages/:splat"
-  status = 200
-  condition = { "status" = 404 }

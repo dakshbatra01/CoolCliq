@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --mobile-max: 430px;
+    color-scheme: dark;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    @apply bg-dark text-text-primary;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply font-bold;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { @apply bg-dark; }
+  ::-webkit-scrollbar-thumb { @apply bg-dark-border rounded-full; }
+
+  /* Remove number input arrows */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+}
+
+@layer components {
+  /* ── Mobile Container ─────────────────────────────── */
+  .mobile-container {
+    @apply min-h-screen w-full mx-auto relative overflow-x-hidden;
+    max-width: var(--mobile-max);
+    background: linear-gradient(160deg, #0D0D14 0%, #13131F 100%);
+  }
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .btn-primary {
+    @apply w-full py-4 rounded-2xl font-heading font-bold text-lg text-white
+           transition-all duration-200 active:scale-[0.97] select-none;
+    background: linear-gradient(135deg, #6C63FF 0%, #A78BFA 100%);
+    box-shadow: 0 8px 32px rgba(108, 99, 255, 0.35);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 40px rgba(108, 99, 255, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    @apply w-full py-4 rounded-2xl font-heading font-semibold text-lg text-text-primary
+           border border-dark-border bg-dark-surface
+           transition-all duration-200 active:scale-[0.97] select-none;
+  }
+  .btn-secondary:hover {
+    @apply border-accent-blue/50 bg-dark-card;
+  }
+
+  .btn-danger {
+    @apply w-full py-4 rounded-2xl font-heading font-bold text-lg text-white
+           transition-all duration-200 active:scale-[0.97] select-none;
+    background: linear-gradient(135deg, #FF4D6D 0%, #FF6B35 100%);
+    box-shadow: 0 8px 32px rgba(255, 77, 109, 0.4);
+  }
+
+  .btn-ghost {
+    @apply py-3 px-5 rounded-xl font-medium text-text-secondary
+           transition-all duration-200 active:scale-[0.97];
+  }
+  .btn-ghost:hover { @apply text-text-primary bg-dark-surface; }
+
+  .btn-icon {
+    @apply p-2.5 rounded-xl bg-dark-surface border border-dark-border
+           transition-all duration-200 active:scale-95;
+  }
+  .btn-icon:hover { @apply bg-dark-border; }
+
+  /* ── Cards ───────────────────────────────────────── */
+  .card {
+    @apply bg-dark-card border border-dark-border rounded-2xl p-4;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-glass {
+    @apply border border-dark-border rounded-2xl p-4 backdrop-blur-xl;
+    background: rgba(19, 19, 31, 0.8);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ── Inputs ──────────────────────────────────────── */
+  .input-field {
+    @apply w-full bg-dark-surface border border-dark-border rounded-2xl
+           px-4 py-4 text-text-primary placeholder:text-text-muted
+           outline-none transition-all duration-200 text-base;
+  }
+  .input-field:focus {
+    @apply border-accent-blue/60;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+  }
+
+  /* ── Bottom Sheet ────────────────────────────────── */
+  .bottom-sheet {
+    @apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full rounded-t-3xl
+           border-t border-dark-border p-6 z-50;
+    max-width: var(--mobile-max);
+    background: rgba(19, 19, 31, 0.97);
+    backdrop-filter: blur(20px);
+  }
+
+  /* ── Screen Header ───────────────────────────────── */
+  .screen-header {
+    @apply flex items-center justify-between px-5 pb-4;
+    padding-top: max(env(safe-area-inset-top), 16px);
+  }
+
+  /* ── User Avatar ─────────────────────────────────── */
+  .avatar {
+    @apply rounded-full bg-dark-surface border-2 border-dark-border overflow-hidden
+           flex items-center justify-center font-heading font-bold;
+  }
+
+  /* ── Badge ───────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-online {
+    @apply bg-accent-green/20 text-accent-green;
+  }
+  .badge-blue {
+    @apply bg-accent-blue/20 text-accent-blue;
+  }
+  .badge-red {
+    @apply bg-accent-red/20 text-accent-red;
+  }
+
+  /* ── Section Title ───────────────────────────────── */
+  .section-title {
+    @apply text-lg font-heading font-bold text-text-primary;
+  }
+
+  /* ── Divider ─────────────────────────────────────── */
+  .divider {
+    @apply h-px bg-dark-border w-full;
+  }
+
+  /* ── Shimmer Skeleton ────────────────────────────── */
+  .skeleton {
+    background: linear-gradient(90deg, #1A1A2E 25%, #2A2A40 50%, #1A1A2E 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-xl;
+  }
+
+  /* ── Gradient Text ────────────────────────────────── */
+  .gradient-text {
+    background: linear-gradient(135deg, #6C63FF 0%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── OTP Input Boxes ─────────────────────────────── */
+  .otp-box {
+    @apply w-12 h-14 text-center text-xl font-mono font-bold
+           bg-dark-surface border-2 border-dark-border rounded-xl
+           text-text-primary outline-none transition-all duration-200;
+  }
+  .otp-box:focus {
+    @apply border-accent-blue;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+  }
+
+  /* ── Floating Action Button ──────────────────────── */
+  .fab {
+    @apply fixed bottom-8 right-4 w-14 h-14 rounded-2xl
+           flex items-center justify-center shadow-brand z-40;
+    background: linear-gradient(135deg, #6C63FF 0%, #A78BFA 100%);
+  }
+
+  /* ── Tab Bar ─────────────────────────────────────── */
+  .tab-bar {
+    @apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full
+           border-t border-dark-border flex items-center justify-around
+           px-4 py-3 z-30;
+    max-width: var(--mobile-max);
+    background: rgba(13, 13, 20, 0.95);
+    backdrop-filter: blur(20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 12px);
+  }
+
+  /* ── Pulse Dot ───────────────────────────────────── */
+  .pulse-dot {
+    @apply w-2.5 h-2.5 rounded-full bg-accent-green relative;
+  }
+  .pulse-dot::after {
+    content: '';
+    @apply absolute inset-0 rounded-full bg-accent-green animate-ping;
+  }
+
+  /* ── Messages ────────────────────────────────────── */
+  .msg-bubble-sent {
+    @apply max-w-[75%] px-4 py-2.5 rounded-2xl rounded-br-sm text-white text-sm;
+    background: linear-gradient(135deg, #6C63FF 0%, #A78BFA 100%);
+  }
+  .msg-bubble-received {
+    @apply max-w-[75%] px-4 py-2.5 rounded-2xl rounded-bl-sm text-text-primary text-sm
+           bg-dark-surface border border-dark-border;
+  }
+}
+
+@layer utilities {
+  .safe-top { padding-top: max(env(safe-area-inset-top), 20px); }
+  .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

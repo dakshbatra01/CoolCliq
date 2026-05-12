@@ -1,0 +1,25 @@
+# Source control
+.git
+.gitignore
+
+# Build artifacts
+**/.next
+**/dist
+**/build
+**/out
+
+# Deps (Docker will install its own)
+**/node_modules
+
+# Turbo cache
+.turbo
+
+# Env files (inject via Render environment tab)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Misc
+.DS_Store
+*.pem
+README.md

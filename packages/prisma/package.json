@@ -1,0 +1,21 @@
+{
+  "name": "@coolcliq/prisma",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./generated/client",
+  "scripts": {
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:seed": "ts-node seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "@coolcliq/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "prisma": "^5.15.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}

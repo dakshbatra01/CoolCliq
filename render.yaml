@@ -1,0 +1,36 @@
+# Render Infrastructure-as-Code
+# Deploy by connecting your GitHub repo to Render and it will auto-detect this file.
+# Docs: https://render.com/docs/yaml-spec
+
+services:
+  - type: web
+    name: coolcliq-api
+    env: docker
+    dockerfilePath: packages/api/Dockerfile
+    dockerContext: .
+    plan: free           # change to "starter" for always-on
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      # ── Set these in the Render dashboard (mark as secret) ──────────────────
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: WEB_URL
+        sync: false        # e.g. https://coolcliq.vercel.app
+      - key: ADMIN_URL
+        sync: false        # e.g. https://coolcliq-admin.vercel.app
+      # ── Optional ────────────────────────────────────────────────────────────
+      - key: SKIP_GPS_VALIDATION
+        value: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false

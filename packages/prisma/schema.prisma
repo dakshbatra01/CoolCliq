@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum VenueCategory {
+  CAFE
+  BAR
+  RESTAURANT
+  LOUNGE
+  OTHER
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  phone       String   @unique
+  alias       String   @unique
+  avatarSeed  String
+  gender      Gender
+  isActive    Boolean  @default(true)
+  isAdmin     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sessions         Session[]
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  blockedUsers     Block[]        @relation("BlockedBy")
+  blockedByUsers   Block[]        @relation("Blocking")
+  reports          Report[]       @relation("Reporter")
+  reportedIn       Report[]       @relation("Reported")
+  conversationsAs1 Conversation[] @relation("ConvUser1")
+  conversationsAs2 Conversation[] @relation("ConvUser2")
+
+  @@map("users")
+}
+
+model Venue {
+  id          String        @id @default(cuid())
+  name        String
+  address     String
+  lat         Float
+  lng         Float
+  category    VenueCategory @default(OTHER)
+  isActive    Boolean       @default(true)
+  qrCode      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  sessions      Session[]
+  tables        Table[]
+  conversations Conversation[]
+
+  @@map("venues")
+}
+
+model Table {
+  id      String  @id @default(cuid())
+  venueId String
+  venue   Venue   @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  label   String
+  qrCode  String?
+
+  sessions Session[]
+
+  @@map("tables")
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venueId     String
+  venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  tableId     String?
+  table       Table?    @relation(fields: [tableId], references: [id])
+  checkedInAt DateTime  @default(now())
+  exitedAt    DateTime?
+  isActive    Boolean   @default(true)
+  lat         Float
+  lng         Float
+
+  @@map("sessions")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  user1Id   String
+  user1     User     @relation("ConvUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2Id   String
+  user2     User     @relation("ConvUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  venueId   String
+  venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  messages    Message[]
+  tableReveal TableReveal?
+
+  @@unique([user1Id, user2Id, venueId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId     String
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content        String       @db.VarChar(500)
+  sentAt         DateTime     @default(now())
+  isRead         Boolean      @default(false)
+
+  @@map("messages")
+}
+
+model TableReveal {
+  id             String       @id @default(cuid())
+  conversationId String       @unique
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user1Consented Boolean      @default(false)
+  user2Consented Boolean      @default(false)
+  tableLabel     String?
+  revealedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@map("table_reveals")
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blocker   User     @relation("BlockedBy", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String
+  blocked   User     @relation("Blocking", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  reporter   User     @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedId String
+  reported   User     @relation("Reported", fields: [reportedId], references: [id], onDelete: Cascade)
+  reason     String
+  resolved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("reports")
+}
+
+model OtpToken {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("otp_tokens")
+}
